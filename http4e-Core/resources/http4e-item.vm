@@ -1,0 +1,9 @@
+<html><head></head><body>
+<a href="../index-sessions.html">View All</a>
+<pre style="background: none repeat scroll 0% 0% #ececda; padding: 10px;"><span style="color: #993300;">$httpBean.request
+</span></pre>
+
+<pre style="background: none repeat scroll 0% 0% #E9EDDA; padding: 10px;"><span style="color: #993300;">$httpBean.response
+</span></pre>
+</body>
+</html>

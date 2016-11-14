@@ -1,0 +1,9 @@
+<project name="Run Build" default="all">
+
+  <target name="all">
+      <subant target="">
+          <fileset dir="../" includes="*/ant.project.xml" />
+      </subant>
+  </target>
+
+</project>

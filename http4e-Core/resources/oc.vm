@@ -1,0 +1,240 @@
+/*
+Command-line example that uses this library:
+#import <Foundation/Foundation.h>
+
+int main (int argc, const char * argv[]) {
+    NSAutoreleasePool * pool;
+    pool = [[NSAutoreleasePool alloc] init];
+    
+    AKResourceSubClass* resource;
+    resource = [[AKResourceSubClass alloc] init];
+    [resource get];
+    NSDictionary* plist = [resource getPropertyList];
+    // Do something with the results...
+
+    [pool drain];
+    return 0;
+}
+*/
+
+#import <Foundation/Foundation.h>
+
+@interface AKResource : NSObject {
+    NSMutableData* receivedData;
+    
+    NSString* mimeType;
+    NSString* server;
+    
+    BOOL async;
+}
+
+-(id)init;
+-(void)setServer:(NSString*)serverName;
+-(void)connection:(NSURLConnection *)connection 
+    didReceiveResponse:(NSURLResponse *)response;
+-(void)connection:(NSURLConnection *)connection 
+    didReceiveData:(NSData *)data;
+-(void)connection:(NSURLConnection *)connection
+    didFailWithError:(NSError *)error;
+-(void)connectionDidFinishLoading:(NSURLConnection *)connection;
+-(void)sendRequestTo:(NSString*)urlString 
+    usingVerb:(NSString*)verb 
+        withParameters:(NSDictionary*)parameters;
+-(void)setAsynchronous:(BOOL)asynchronously;
+-(NSDictionary*)getPropertyList;
+-(NSString*)getResponseText;
+
+@end
+
+
+
+
+
+
+
+#import "AKResource.h"
+
+@implementation AKResource
+
+-(id)init
+{
+    self = [super init];
+
+    if(self)
+    {
+        receivedData = [[NSMutableData alloc] init];
+
+        mimeType = @"application/plist";
+        server = @"localhost";
+        
+        async = NO;
+    }
+
+    return self;
+}
+
+-(void)setServer:(NSString*)serverName
+{
+    server = serverName;
+}
+
+-(void)sendRequestTo:(NSString*)resource 
+    usingVerb:(NSString*)verb 
+    withParameters:(NSDictionary*)parameters
+{
+    NSURL* url = [NSURL URLWithString:[NSString 
+        stringWithFormat:@"http://%@/%@", server, resource]];
+
+    NSMutableDictionary* headers = [[NSMutableDictionary alloc] init];    
+#foreach( $hKey in $httpBean.headers.keySet() )
+    [headers setValue:@"$httpBean.headers.get($hKey)" forKey:@"$hKey"];
+#end
+
+    NSMutableURLRequest* request;
+    request = [NSMutableURLRequest requestWithURL:url
+                cachePolicy:NSURLRequestUseProtocolCachePolicy
+                timeoutInterval:60.0];
+    [request setHTTPMethod:verb];
+    [request setAllHTTPHeaderFields:headers];
+
+    if (parameters)
+    {
+        NSMutableString* params = [[NSMutableString alloc] init];
+        for (id key in parameters)
+        {
+            [params appendFormat:@"%@=%@&", 
+                [key stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding], 
+                [[parameters objectForKey:key] 
+                    stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+        }
+        [params deleteCharactersInRange:NSMakeRange([params length] - 1, 1)];
+    
+        NSData* body = [params dataUsingEncoding:NSUTF8StringEncoding];
+        [request setHTTPBody:body];
+    }
+    if (async)
+    {
+        NSURLConnection* connection;
+        connection = [[NSURLConnection alloc]  initWithRequest:request
+                                                delegate:self
+                                                startImmediately:YES];
+
+        if (!connection)
+        {
+            NSLog(@"Could not open connection to resource");
+        }
+    }
+    else
+    {
+        NSURLResponse* response = [[NSURLResponse alloc] init];
+        NSError* error = [[NSError alloc] init];
+        NSData* data = [NSURLConnection 
+            sendSynchronousRequest:request 
+            returningResponse:&response 
+            error:&error];
+        [receivedData setData:data];
+    }
+}
+
+-(void)connection:(NSURLConnection *)connection
+        didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
+{
+/*
+    NSURLCredential *newCredential;
+    newCredential = [NSURLCredential credentialWithUser:username
+                        password:password
+                        persistence:NSURLCredentialPersistenceNone];
+    [[challenge sender] useCredential:newCredential 
+        forAuthenticationChallenge:challenge];
+*/
+}
+
+-(void)connection:(NSURLConnection *)connection 
+    didReceiveResponse:(NSURLResponse *)response
+{
+    NSHTTPURLResponse* httpResponse;
+    httpResponse = (NSHTTPURLResponse*)response;
+    int statusCode = [httpResponse statusCode];
+    if (statusCode != 200)
+    {
+        NSMutableDictionary* info;
+        info = [NSMutableDictionary dictionaryWithObject:[response URL] 
+            forKey:NSErrorFailingURLStringKey];
+        [info setObject:@"An error code different than 200 was received!" 
+            forKey:NSLocalizedDescriptionKey];
+        NSError* error = [NSError errorWithDomain:@"API Wrapper" 
+            code:statusCode 
+            userInfo:info];
+        NSDictionary* errorData = [NSDictionary 
+            dictionaryWithObject:error 
+            forKey:@"error"];
+
+        [[NSNotificationCenter defaultCenter]
+            postNotificationName:@"ConnectionDidFailWithStatusCodeNotOK"
+            object:self
+            userInfo:errorData];
+    }
+    [receivedData setLength:0];
+}
+
+-(void)connection:(NSURLConnection *)connection 
+    didReceiveData:(NSData *)data
+{
+    [receivedData appendData:data];
+}
+
+-(void)connection:(NSURLConnection *)connection 
+    didFailWithError:(NSError *)error
+{
+    [connection release];
+
+    NSDictionary* errorData = [NSDictionary 
+                                dictionaryWithObject:error 
+                                forKey:@"error"];
+ 
+    [[NSNotificationCenter defaultCenter]
+        postNotificationName:@"ConnectionDidFailWithError"
+        object:self
+        userInfo:errorData];
+
+    NSLog(@"Connection failed! Error - %@ %@",
+          [error localizedDescription],
+          [[error userInfo] objectForKey:NSErrorFailingURLStringKey]);
+}
+
+-(void)connectionDidFinishLoading:(NSURLConnection *)connection
+{
+    [[NSNotificationCenter defaultCenter]
+        postNotificationName:@"ConnectionDidFinishLoading"
+        object:self];
+    [connection release];
+}
+
+-(void)setAsynchronous:(BOOL)asynchronously
+{
+    async = asynchronously;
+}
+
+-(NSDictionary*)getPropertyList
+{
+    NSString* errorStr = nil;
+    NSDictionary* propertyList;
+    NSPropertyListFormat format;
+
+    propertyList = [NSPropertyListSerialization 
+                    propertyListFromData:receivedData
+                    mutabilityOption: NSPropertyListImmutable
+                    format: &format
+                    errorDescription: &errorStr];
+    return propertyList;
+}
+
+-(NSString*)getResponseText
+{
+    return [[NSString alloc] 
+            initWithData:receivedData 
+            encoding:NSUTF8StringEncoding];
+}
+
+@end
+

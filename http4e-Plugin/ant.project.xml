@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Plugin Sub Build" default="dist" basedir=".">
+
+	<import file="../ant.macros.xml" />
+
+
+	<target name="clean" description="clean up" >
+		<clean product="${project.plugin}"/>
+	</target>
+
+
+	<target name="copy-bin-includes" >
+		<copy-bin-includes 
+			build.project="${build}/${project.plugin}"
+			build.dependent="${build}/${project.core}"/>
+	</target>
+
+
+	<target name="prepare" description="prepare directories">
+		<prepare 
+			product="${project.plugin}"/>
+	</target>
+
+
+	<target name="compile" depends="prepare">
+		<compile 
+			product="${project.plugin}" 
+			ide.type="sdk" 
+			ide.version="${ide.version}"
+			build.dependent="${build}/${project.core}"
+		/>
+	</target>
+
+
+	<target name="dist" depends="clean,compile,copy-bin-includes">
+		<dist product="${project.plugin}"/>
+	</target>
+
+
+	<target name="eclipse" depends="dist">
+		<eclipse ide.type="sdk" ide.version="${ide.version}"/>
+	</target>
+		
+
+</project>
+

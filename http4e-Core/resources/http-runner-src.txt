@@ -1,0 +1,187 @@
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.methods.DeleteMethod;
+import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.methods.HeadMethod;
+import org.apache.commons.httpclient.methods.OptionsMethod;
+import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.PutMethod;
+import org.apache.commons.httpclient.methods.RequestEntity;
+import org.apache.commons.httpclient.methods.StringRequestEntity;
+import org.apache.commons.httpclient.methods.TraceMethod;
+
+mainclass
+
+class HttpRunner {
+    
+    private Bean bean;
+    private HttpMethod httpMethod = null;    
+
+    public void execute(Bean tBean, ResponseReader responseReader) {
+        this.bean = tBean;
+        
+        try {
+            if ("GET".equals(bean.method)) {
+                httpMethod = new GetMethod(bean.url);
+                addHeaders(httpMethod);
+                
+            } else if ("POST".equals(bean.method)) {
+                httpMethod = new PostMethod(bean.url);
+                addHeaders(httpMethod);
+                addParams((PostMethod) httpMethod);
+                RequestEntity re = new StringRequestEntity(bean.body, null, "UTF8");
+                ((PostMethod) httpMethod).setRequestEntity(re);
+                
+            } else if ("HEAD".equals(bean.method)) {
+                httpMethod = new HeadMethod(bean.url);
+                addHeaders(httpMethod);
+                
+            } else if ("PUT".equals(bean.method)) {
+                httpMethod = new PutMethod(bean.url);
+                addHeaders(httpMethod);
+                
+                RequestEntity re = new StringRequestEntity(bean.body, null, "UTF8");
+                ((PutMethod) httpMethod).setRequestEntity(re);
+                
+            } else if ("DELETE".equals(bean.method)) {
+                httpMethod = new DeleteMethod(bean.url);
+                addHeaders(httpMethod);
+                
+            } else if ("TRACE".equals(bean.method)) {
+                httpMethod = new TraceMethod(bean.url);
+                addHeaders(httpMethod);
+                
+            } else if ("OPTIONS".equals(bean.method)) {
+                httpMethod = new OptionsMethod(bean.url);
+                addHeaders(httpMethod);
+                
+            } else {
+                throw new RuntimeException("Method '" + bean.method + "' not implemented.");
+            }
+            
+            doExecute(httpMethod, responseReader);
+
+        } catch (IOException e) {
+            abort();
+            e.printStackTrace();
+            
+        } catch (IllegalArgumentException e) {
+            abort();
+            e.printStackTrace();
+            
+        } catch (Exception e) {
+            abort();
+            e.printStackTrace();
+        }
+        
+    }
+    
+
+    private void addParams(PostMethod postMethod) {
+        for (Iterator it = bean.parameters.entrySet().iterator(); it.hasNext();) {
+            Map.Entry me = (Map.Entry) it.next();
+            String key = (String) me.getKey();
+            List values = (List) me.getValue();
+            StringBuilder sb = new StringBuilder();
+            int cnt = 0;
+            for (Iterator it2 = values.iterator(); it2.hasNext();) {
+                String val = (String) it2.next();
+                if (cnt != 0) {
+                    sb.append(",");
+                }
+                sb.append(val);
+                cnt++;
+            }
+            postMethod.setParameter(key, sb.toString());
+        }
+    }
+    
+
+    private void addHeaders(HttpMethod httpMethod) {
+        for (Iterator it = bean.headers.entrySet().iterator(); it.hasNext();) {
+            Map.Entry me = (Map.Entry) it.next();
+            String key = (String) me.getKey();
+            List values = (List) me.getValue();
+            StringBuilder sb = new StringBuilder();
+            int cnt = 0;
+            for (Iterator it2 = values.iterator(); it2.hasNext();) {
+                String val = (String) it2.next();
+                if (cnt != 0) {
+                    sb.append(",");
+                }
+                sb.append(val);
+                cnt++;
+            }
+            httpMethod.addRequestHeader(key, sb.toString());
+        }
+    }
+    
+
+    private void doExecute(HttpMethod httpMethod, ResponseReader responseReader) {
+        HttpClient client = new HttpClient();
+        try {
+            client.executeMethod(httpMethod);
+            
+            responseReader.read(httpMethod);
+            
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+            
+        } finally {
+            if(httpMethod != null) httpMethod.releaseConnection();
+        }
+    }
+    
+
+    public void abort() {
+        if (httpMethod == null) {
+            return;
+        }
+        try {
+            httpMethod.abort();
+            httpMethod = null;
+        } catch (Exception giveup) {}
+    }
+    
+
+    /////////////////////////////////////////////////
+    public static class Bean {        
+        String method = "GET";
+        String url = "";
+        String body = "";
+        private Map headers = new HashMap();
+        private Map parameters = new HashMap();
+        public void addHeader(String key, String value){
+            List valuesList = (List)headers.get(key);
+            if(valuesList == null){
+                valuesList = new ArrayList();                
+            }
+            valuesList.add(value);
+            headers.put(key, valuesList);
+        }
+        public void addParam(String key, String value){
+            List valuesList = (List)parameters.get(key);
+            if(valuesList == null){
+                valuesList = new ArrayList();                
+            }
+            valuesList.add(value);
+            parameters.put(key, valuesList);
+        }
+        public String toString() {
+            return "{method=" + method + ",url=" + url + ",headers=" + headers + ",parameters=" + parameters + "}";
+        }
+    }
+    
+    public static interface ResponseReader {        
+        void read(HttpMethod httpMethod);
+    }
+    /////////////////////////////////////////////////
+        
+}

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Core Sub Build" default="dist" basedir=".">
+
+	<import file="../ant.macros.xml" />
+	
+
+	<target name="copy-resources" depends="compile,copy-bin-includes">
+		<copydir dest="${build}/${project.feature}/icons" src="${basedir}/icons"></copydir>
+	</target>
+		
+		
+	<target name="clean" description="clean up" >
+		<clean product="${project.feature}"/>
+	</target>
+	
+	
+	<target name="copy-bin-includes" >
+		<copy-bin-includes 
+			build.project="${build}/${project.feature}"
+			build.dependent="${build}/${project.feature}"/>
+	</target>
+
+
+	<target name="prepare" description="prepare directories">
+		<prepare 
+			product="${project.feature}"/>
+	</target>
+
+
+	<target name="compile" depends="prepare">
+		<compile 
+			product="${project.feature}" 
+			ide.type="sdk" 
+			ide.version="${ide.version}"
+			build.dependent="${build}/${project.feature}"
+		/>
+	</target>
+
+
+	<target name="dist" depends="clean">
+        <jar destfile="${basedir}/../install/features/${project.plugin}_${product.version}.jar" basedir="." includes="feature.xml">
+        </jar>
+	</target>
+
+
+	<target name="eclipse" depends="dist">
+		<eclipse ide.type="sdk" ide.version="${ide.version}"/>
+	</target>
+
+
+</project>
+

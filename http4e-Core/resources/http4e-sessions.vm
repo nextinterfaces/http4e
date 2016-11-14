@@ -1,0 +1,28 @@
+<html><head><style>body,th,td,a,p{font-family:verdana,sans-serif;font-size: 10px;}</style></head><body>
+<table>
+<tr>
+  <th>&nbsp;</th>
+  <th>#</th>
+  <th>Method</th>
+  <th>Protocol</th>
+  <th>Host</th>
+  <th>URL</th>
+  <th>Body</th>
+  <th>Content-Type</th>
+</tr>
+
+#foreach( $httpBean in $httpbeans ) 
+<tr>
+  <td><a href="$httpBean.href">View</a></td>
+  <td>$httpBean.id</td>
+  <td>$httpBean.method</td>
+  <td>$httpBean.protocol</td>
+  <td>$httpBean.domain</td>
+  <td>$httpBean.path</td>
+  <td>$httpBean.bodyShort</td>
+  <td>$httpBean.contentType</td>
+</tr>
+#end
+
+</table></body>
+</html>

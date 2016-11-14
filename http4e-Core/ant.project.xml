@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Core Sub Build" default="dist" basedir=".">
+
+	<import file="../ant.macros.xml" />
+	
+
+	<target name="copy-resources" depends="compile,copy-bin-includes">
+		<copydir dest="${build}/${project.core}/icons" src="${basedir}/icons"></copydir>
+	</target>
+		
+		
+	<target name="clean" description="clean up" >
+		<clean product="${project.core}"/>
+	</target>
+	
+	
+	<target name="copy-bin-includes" >
+		<copy-bin-includes 
+			build.project="${build}/${project.core}"
+			build.dependent="${build}/${project.core}"/>
+	</target>
+
+
+	<target name="prepare" description="prepare directories">
+		<prepare 
+			product="${project.core}"/>
+	</target>
+
+
+	<target name="compile" depends="prepare">
+		<compile 
+			product="${project.core}" 
+			ide.type="sdk" 
+			ide.version="${ide.version}"
+			build.dependent="${build}/${project.core}"
+		/>
+	</target>
+
+
+	<target name="dist" depends="clean,compile,copy-bin-includes,copy-resources">
+		<dist product="${project.core}"/>
+	</target>
+
+
+	<target name="eclipse" depends="dist">
+		<eclipse ide.type="sdk" ide.version="${ide.version}"/>
+	</target>
+
+
+</project>
+
