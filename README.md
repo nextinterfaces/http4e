@@ -1,7 +1,7 @@
 HTTP4e
 ====
 
-HTTP4e is an Eclipse HTTP Client plugin simplifying REST and Web Service testing, enabling developer to make HTTP packets directly from Eclipse. The packets include requests, responses and the HTTP headers (which contain the cookies and caching information). It is a useful tool for HTTP header tampering and hacking.
+HTTP4e is an Eclipse HTTP Client plugin simplifying REST and Web Service testing, enabling developer to make HTTP packets directly from Eclipse. The packets include all HTTP requests, responses and the HTTP headers (which contain the cookies and caching information). It is a useful tool for HTTP header tampering and hacking, allowing HTTP call generation to a programming language of choice, as well as JMeter load testing.
 
 
 ### More information
