@@ -5,28 +5,36 @@
    </feature>
    <category-def name="Eclipse HttpClient (HTTP4e)" label="Eclipse HttpClient (HTTP4e)">
       <description>
-Eclipse HttpRest Client is a Rich GUI making HTTP and REST calls directly from Eclipse IDE, making priceless tool for Web Development, Web Services and Rest Services.
+HTTP4e
+====
 
-Features:
+HTTP4e is an Eclipse HTTP Client plugin simplifying REST and Web Service testing, enabling developer to make HTTP packets directly from Eclipse. The packets include all HTTP requests, responses and the HTTP headers (which contain the cookies and caching information). It is a useful tool for HTTP header tampering and hacking, allowing HTTP code generation to a programming language of choice, as well as JMeter load testing.
 
-    * Making HTTP, REST calls directly from Eclipse IDE
-    * Visual Editor Panels for http Headers, http Parameters and http packet Body
-    * Tab support (allowing running different REST,HTTP calls on separate tabs)
-    * History support (persisting your valuable REST calls)
-    * Code assist
-    * Syntax coloring
-    * Different views: Raw HTTP view, Pretty view, Hex view, Browser view and JSON view
-    * Exporting the HTTP call as a pure Java main call, thus your REST call is ready to run from Java.
-    * A browser experience
-    * Great usability and great UI ;)
-    * Available on Windows, MacOS X, Linux, Solaris
-    * Build on top of industrial proven Apache HttpClient
-    * Proxy preferences configuration
-    * SSL preferences configuration
 
-A Web Services, REST services, Web Developer MUST HAVE tool. 
+### More information
+http://nextinterfaces.com/http4e
 
-Requirements: Java 5+, Eclipse 3.2+
+
+### Key Features
+* Multiple Tabs 
+* Auto Suggest (CTRL + SPACE)
+* Response view format into Raw, Pretty, JSON, HEX, Browser DOM
+* SSL/HTTPS and Unicode support
+* Basic/Digest authentication
+* Proxy support
+* Parameterization of Headers/HTTP-Params 
+* HTTP code export to Java, JavaScript, Prototype, jQuery, Flex, ActionScript, C#, VisualBasic, Ruby, Python, PHP, Cocoa and JMeter
+* One click HTML Report generation
+* Multipart Form support
+
+
+### Install URL
+http://nextinterfaces.com/http4e/install
+
+License
+--------------
+Apache License v.2.0
+
 
       </description>
    </category-def>
