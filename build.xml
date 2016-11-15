@@ -1,0 +1,63 @@
+<project name="Http4e MasterBuild" default="all">
+
+	<property file="ant.properties" />	
+	
+    <target name="build">
+        <subant target="">
+            <fileset dir="." includes="*/ant.project.xml" />
+        </subant>
+    </target>
+	
+		
+	<macrodef name="iterate">  
+		<attribute name="target"/>
+		<sequential>
+			<subant target="@{target}">
+				<fileset dir="." includes="*/ant.project.xml" />
+			</subant>
+		</sequential>
+	</macrodef>
+	
+	
+	<target name="clean">
+		<iterate target="clean"/>
+	</target>
+	
+
+	<target name="dist">
+		<iterate target="dist"/>
+	</target>
+	
+	
+	<target name="compile">
+		<iterate target="compile"/>
+	</target>
+	
+	
+	<target name="feature">
+		<copy todir="dest" flatten="true">
+		</copy>
+	</target>
+	
+	<target name="tar" depends="">
+		<echo>Preparing Tar Product including:
+		features/${project.plugin}_${product.version}.jar,
+		plugins/${project.plugin}_${product.version}.jar,
+		plugins/${project.core}_${product.version}.jar</echo>
+		
+ 		<copy file="./site.xml" tofile="./install/site.xml"/>
+
+		<tar destfile="install/${product.tar}">
+			<tarfileset dir="install/features" prefix="/features" preserveLeadingSlashes="false">
+				<include name="${project.plugin}_${product.version}.jar"/>
+			</tarfileset>
+			<tarfileset dir="install/plugins" prefix="/plugins" preserveLeadingSlashes="false">
+				<include name="${project.core}_${product.version}.jar"/>
+				<include name="${project.plugin}_${product.version}.jar"/>
+			</tarfileset>
+		</tar>
+    </target>
+	
+    <target name="all" depends="build,tar"/>	
+
+</project>

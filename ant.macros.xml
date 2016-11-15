@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Http4e.Macros">
+
+	<!-- Properties -->
+
+	<property file="${basedir}/../ant.properties" />
+	<property name="ide.libs" location="${basedir}/../eclipse.sdk" />
+	<property name="build" location="${basedir}/../.build" />
+	<property name="dist" location="${basedir}/../install/plugins" />
+
+
+	<!-- Macros -->
+
+	<macrodef name="clean" description="clean up">
+		<attribute name="product" />
+		<sequential>
+			<echo>Cleaning</echo>
+			<delete dir="${build}/@{product}" />
+		</sequential>
+	</macrodef>
+
+
+	<macrodef name="copy-bin-includes" description="copy bin includes">
+		<attribute name="build.project" />
+		<attribute name="build.dependent" />
+		<sequential>
+			<echo>Copying bin.includes from ${basedir}</echo>
+			<java classpath="@{build.dependent}" classname="org.roussev.http4e.ant.AntReader">
+				<arg value="${basedir}/build.properties" />
+				<arg value="${basedir}" />
+				<arg value="@{build.project}" />
+			</java>
+		</sequential>
+	</macrodef>
+
+
+	<macrodef name="prepare" description="prepare directories">
+		<attribute name="product" />
+		<sequential>
+			<echo>Preparing</echo>
+			<mkdir dir="${build}/@{product}" />
+		</sequential>
+	</macrodef>
+
+
+
+	<macrodef name="compile" description="prepare directories">
+		<attribute name="build.dependent" />
+		<attribute name="product" />
+		<attribute name="ide.type" />
+		<attribute name="ide.version" />
+		<sequential>
+			<path id="compile.classpath">
+				<fileset dir="${basedir}/lib">
+					<include name="*.jar" />
+				</fileset>
+				<fileset dir="${ide.libs}/@{ide.version}/@{ide.type}">
+					<include name="*.jar" />
+				</fileset>
+			</path>
+			<echo>
+				Compiling with libs:
+				${basedir}/lib
+				${ide.libs}/@{ide.version}/@{ide.type}
+			</echo>
+			<javac srcdir="${basedir}/src" destdir="${build}/@{product}" debug="false" target="1.5">
+				<classpath refid="compile.classpath" />
+				<classpath location="@{build.dependent}" />
+				<include name="**/*.java" />
+			</javac>
+		</sequential>
+	</macrodef>
+
+
+	<macrodef name="dist" description="prepare directories">
+		<attribute name="product" />
+		<sequential>
+			<echo>Disting..</echo>
+			<zip file="${dist}/@{product}_${product.version}.jar" basedir="${build}/@{product}">
+			</zip>
+		</sequential>
+	</macrodef>
+
+
+	<macrodef name="eclipse" description="prepare directories">
+		<attribute name="ide.type" />
+		<attribute name="ide.version" />
+		<sequential>
+			<echo>Starting ide</echo>
+			<java jar="${dist}/@{ide.version}/@{ide.type}/eclipse/startup.jar" fork="true">
+				<arg value="-consolelog" />
+				<arg value="-clean" />
+				<arg value="-debug" />
+			</java>
+		</sequential>
+	</macrodef>
+
+
+</project>

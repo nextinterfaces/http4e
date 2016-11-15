@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/org.roussev.http4e.ui_5.0.12.jar" id="org.roussev.http4e.ui" version="5.0.12">
+      <category name="Eclipse HttpClient (HTTP4e)"/>
+   </feature>
+   <category-def name="Eclipse HttpClient (HTTP4e)" label="Eclipse HttpClient (HTTP4e)">
+      <description>
+Eclipse HttpRest Client is a Rich GUI making HTTP and REST calls directly from Eclipse IDE, making priceless tool for Web Development, Web Services and Rest Services.
+
+Features:
+
+    * Making HTTP, REST calls directly from Eclipse IDE
+    * Visual Editor Panels for http Headers, http Parameters and http packet Body
+    * Tab support (allowing running different REST,HTTP calls on separate tabs)
+    * History support (persisting your valuable REST calls)
+    * Code assist
+    * Syntax coloring
+    * Different views: Raw HTTP view, Pretty view, Hex view, Browser view and JSON view
+    * Exporting the HTTP call as a pure Java main call, thus your REST call is ready to run from Java.
+    * A browser experience
+    * Great usability and great UI ;)
+    * Available on Windows, MacOS X, Linux, Solaris
+    * Build on top of industrial proven Apache HttpClient
+    * Proxy preferences configuration
+    * SSL preferences configuration
+
+A Web Services, REST services, Web Developer MUST HAVE tool. 
+
+Requirements: Java 5+, Eclipse 3.2+
+
+      </description>
+   </category-def>
+</site>
