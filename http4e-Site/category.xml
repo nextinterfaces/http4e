@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/org.roussev.http4e.feature_5.0.12.jar" id="org.roussev.http4e.feature" version="5.0.12">
+      <category name="tools"/>
+   </feature>
+   <category-def name="tools" label="Tools"/>
+</site>

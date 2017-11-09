@@ -28,6 +28,9 @@ http://nextinterfaces.com/http4e/install
 
 Build Instructions
 --------------
+
+## With Ant
+
 ```
 project-root> ant
 ```
@@ -40,6 +43,21 @@ install/
   plugins/
   http4e-eclipse-rest-http-client.tar
 ```
+
+## With Maven
+
+```
+project-root> mvn build
+```
+
+And look into `http4e-Site/target`
+
+To update version
+```bash
+mvn org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion=5.0.13-SNAPSHOT
+```
+
+
 
 License
 --------------
