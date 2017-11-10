@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/org.roussev.http4e.ui_5.0.12.jar" id="org.roussev.http4e.ui" version="5.0.12">
+   <feature url="features/org.roussev.http4e.feature_5.0.12.jar" id="org.roussev.http4e.feature" version="5.0.12">
       <category name="Eclipse HttpClient (HTTP4e)"/>
    </feature>
    <category-def name="Eclipse HttpClient (HTTP4e)" label="Eclipse HttpClient (HTTP4e)">
